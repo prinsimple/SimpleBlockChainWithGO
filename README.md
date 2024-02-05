@@ -12,7 +12,7 @@ Copy the folder name go you just downloaded to :
 ```
 Paste this into your bash or zsh to add enviroment path
 ```sh
-"export PATH=$PATH:/usr/local/go/bin"
+export PATH=$PATH:/usr/local/go/bin
 ```
 1. Clone the repository
 ```sh
