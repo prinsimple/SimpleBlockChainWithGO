@@ -1,4 +1,4 @@
-module github.com/tensor-programming/golang-blockchain
+module github.com/notlongfen/SimpleBlockChainWithGO
 
 go 1.21.6
 

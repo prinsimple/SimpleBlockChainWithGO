@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/tensor-programming/golang-blockchain/blockchain"
+	"github.com/notlongfen/SimpleBlockChainWithGO/blockchain"
 )
 
 type CommandLine struct {
