@@ -1,12 +1,12 @@
 ## THIS REPOSITORY WAS CREATED TO LEARN HOW TO BUILD A BLOCKCHAIN IN GO
 
-# Go BlockChain
-This is a simple blockchain written in Go
+# <span style = "color: rgb(0, 172, 215)">Go BlockChain</span> 
+This is a simple blockchain written in <span style = "color: rgb(0, 172, 215)">Go</span>
 
 # Installation
 Assuming you are using WSL.
-Install Go from the official website (require 1.16 or later).
-Copy the folder name go you just downloaded to : 
+Install <span style = "color: rgb(0, 172, 215)">Go</span> from the official website (require 1.16 or later).
+Copy the folder name <span style = "color: rgb(0, 172, 215)">Go</span> you just downloaded to : 
 ```sh
 /usr/local/ 
 ```
@@ -64,4 +64,10 @@ go run main.go send -address "<ANY NAME>" -to "<RECEIVER>" -ammount "<AMOUNT>"
 | `-address` | The wallet address that will be used for this operation |
 | `-to`      | The recipient's wallet address |
 | `-amount`   | The amount of coins to be sent |
+|
 Replace ```<ANY NAME>``` with the above name (or your address) you just set, ```<RECEIVER>``` with the address of the receiver and ```<AMOUNT>``` with the ammount of money you want to send.
+<span style = "color: yellow">❗ ATTENTION ⚠️ </span>
+<!-- <p style="position: relative;">⚠️ Caution! There is important information below.</p> -->
+<p style="position: relative; before: content: ''; width: 100%; height: 3px; background-color: #ff8000; margin-top: -5px;"></p>
+
+Remember to delete the tmp files before running the commands. You can do it simply by deleting the ```tmp``` folder in the project directory or a more ```PROFESSIONAL``` way is to run the command ```rm -r tmp```.
