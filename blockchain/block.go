@@ -2,15 +2,17 @@ package blockchain
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/gob"
 	"log"
+	"os"
 )
 
 type Block struct {
-	Hash     []byte
-	Data     []byte
-	PrevHash []byte
-	Nonce    int
+	Hash         []byte
+	Transactions []*Transaction
+	PrevHash     []byte
+	Nonce        int
 }
 
 // func (b *Block) DeriveHash() {
@@ -19,8 +21,20 @@ type Block struct {
 // 	b.Hash = hash[:]
 // }
 
-func CreateBlock(data string, prevHash []byte) *Block {
-	block := &Block{[]byte{}, []byte(data), prevHash, 0}
+func (b *Block) HashTransaction() []byte {
+	var txHashes [][]byte
+	var txHash [32]byte
+
+	for _, tx := range b.Transactions {
+		txHashes = append(txHashes, tx.ID)
+	}
+	txHash = sha256.Sum256(bytes.Join(txHashes, []byte{}))
+
+	return txHash[:]
+}
+
+func CreateBlock(txs []*Transaction, prevHash []byte) *Block {
+	block := &Block{[]byte{}, txs, prevHash, 0}
 	pow := NewProof(block)
 	nonce, hash := pow.Run()
 	block.Hash = hash[:]
@@ -29,8 +43,8 @@ func CreateBlock(data string, prevHash []byte) *Block {
 	return block
 }
 
-func Genesis() *Block {
-	return CreateBlock("This is Genesis", []byte{})
+func Genesis(coinbase *Transaction) *Block {
+	return CreateBlock([]*Transaction{coinbase}, []byte{})
 }
 
 func (b *Block) Serialize() []byte {
@@ -53,5 +67,16 @@ func (b *Block) DeSerialize(data []byte) *Block {
 func Handle(err error) {
 	if err != nil {
 		log.Panic(err)
+	}
+}
+
+func HandleError(err error, funcName string) {
+	if err != nil {
+		dir, errDir := os.Getwd()
+		if errDir != nil {
+			log.Panicf("Error getting directory: %s", errDir)
+		} else {
+			log.Panicf("Error occurred in function %s at: %s. Error: %s", funcName, dir, err)
+		}
 	}
 }

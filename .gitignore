@@ -1,0 +1,7 @@
+# .gitignore
+
+# Ignore the 'run' file
+/run
+
+# Ignore everything in the 'tmp/blocks' directory
+/tmp
