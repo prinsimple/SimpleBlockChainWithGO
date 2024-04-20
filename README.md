@@ -3,6 +3,10 @@
 # <span style = "color: rgb(0, 172, 215)">Go BlockChain</span> 
 This is a simple blockchain written in <span style = "color: rgb(0, 172, 215)">Go</span>
 
+Implementing Proof Of Work to validate and confim transactions.  
+Please refer to the latest lesson on this README file.
+
+
 # Installation
 Assuming you are using WSL.
 Install <span style = "color: rgb(0, 172, 215)">Go</span> from the official website (require 1.16 or later).
