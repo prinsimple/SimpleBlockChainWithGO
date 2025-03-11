@@ -26,16 +26,23 @@ const (
 	genesisData = "First transaction from Genesis"
 )
 
+// BlockChain 区块链结构体
+// LastHash 存储最后一个区块的哈希值
+// DataBase 存储区块数据的数据库实例
 type BlockChain struct {
 	LastHash []byte
 	DataBase *badger.DB
 }
 
+// BlockChainIterator 区块链迭代器
+// CurrentHash 当前遍历到的区块哈希值
+// DataBase 区块链数据库实例
 type BlockChainIterator struct {
 	CurrentHash []byte
 	DataBase    *badger.DB
 }
 
+// DbExists 检查区块链数据库是否已存在
 func DbExists() bool {
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
 		return false
@@ -43,9 +50,9 @@ func DbExists() bool {
 	return true
 }
 
-// InitBlockChain initializes a new blockchain DB and genesis block
-// with the given coinbase transaction. It creates the DB if it doesn't exist,
-// sets the genesis block as the last hash, and returns a BlockChain instance.
+// InitBlockChain 初始化一个新的区块链
+// 创建创世区块和区块链数据库
+// address: 接收创世区块奖励的地址
 func InitBlockChain(address string) *BlockChain {
 	var lastHash []byte
 
@@ -79,10 +86,8 @@ func InitBlockChain(address string) *BlockChain {
 
 }
 
-// AddBlock adds a new block to the blockchain. It retrieves the last block
-// hash from the "lh" key, creates a new block with the given transactions
-// and previous hash, updates the database with the new block, and sets
-// the new block hash as the "lh" key.
+// AddBlock 向区块链中添加新的区块
+// transactions: 要打包进区块的交易列表
 func (chain *BlockChain) AddBlock(transactions []*Transaction) {
 	var lastHash []byte
 
@@ -109,9 +114,9 @@ func (chain *BlockChain) AddBlock(transactions []*Transaction) {
 	HandleError(err, "AddBlock")
 }
 
-// ContinueBlockChain continues the existing blockchain if one exists. It opens the
-// badger DB, gets the last block hash, creates a BlockChain object and returns it.
-// If no existing chain is found it prints an error and exits.
+// ContinueBlockChain 加载已存在的区块链
+// 如果区块链不存在则退出程序
+// address: 挖矿奖励接收地址
 func ContinueBlockChain(address string) *BlockChain {
 	if !DbExists() {
 		fmt.Println("No existing blockchain found! Please create one")
@@ -135,14 +140,15 @@ func ContinueBlockChain(address string) *BlockChain {
 	return &chain
 }
 
+// Iterator 创建一个区块链迭代器
 func (chain *BlockChain) Iterator() *BlockChainIterator {
 	iter := &BlockChainIterator{chain.LastHash, chain.DataBase}
 
 	return iter
 }
 
-// Next retrieves the next block in the blockchain by fetching the block for the current hash from the database,
-// setting the current hash to the previous hash of that block, and returning the deserialized block.
+// Next 获取迭代器中的下一个区块
+// 返回当前哈希对应的区块，并将迭代器移动到前一个区块
 func (iter *BlockChainIterator) Next() *Block {
 	var block *Block
 
@@ -164,11 +170,9 @@ func (iter *BlockChainIterator) Next() *Block {
 	return block
 }
 
-// FindUnspendTransactions returns a list of transactions associated with the
-// given address that have outputs that have not yet been spent. It iterates
-// through the blockchain, checks each transaction's inputs and outputs, and
-// builds up a mapping of which outputs have been spent. It skips over any
-// outputs that have already been spent.
+// FindUnspendTransactions 查找地址相关的所有未花费交易
+// address: 要查询的地址
+// 返回包含未花费输出的交易列表
 func (chain *BlockChain) FindUnspendTransactions(address string) []Transaction {
 	var unspendTxs []Transaction
 	spentTXOs := make(map[string][]int)
@@ -210,10 +214,9 @@ func (chain *BlockChain) FindUnspendTransactions(address string) []Transaction {
 	return unspendTxs
 }
 
-// FindUTXO returns a list of unspent transaction outputs associated with the
-// provided address by searching the blockchain. It finds all unspent transactions
-// for the address, and accumulates the outputs from those transactions that can
-// be unlocked by the address.
+// FindUTXO 查找地址的所有未花费交易输出
+// address: 要查询的地址
+// 返回该地址能够使用的所有交易输出
 func (chain *BlockChain) FindUTXO(address string) []TxOutput {
 	var UTXOs []TxOutput
 	unspentTransactions := chain.FindUnspendTransactions(address)
@@ -228,12 +231,10 @@ func (chain *BlockChain) FindUTXO(address string) []TxOutput {
 	return UTXOs
 }
 
-// FindSpendableOutputs finds and returns a set of unspent transaction outputs
-// that can be used to pay the given amount from the given address.
-// It searches the blockchain for transactions related to the address,
-// accumulates their unspent outputs until it reaches the target amount,
-// and returns the accumulated amount and a mapping of transaction IDs
-// to the indices of the outputs from that transaction that should be used.
+// FindSpendableOutputs 查找地址中足够支付指定金额的未花费输出
+// address: 要查询的地址
+// amount: 需要支付的金额
+// 返回累计金额和可用的交易输出映射
 func (chain *BlockChain) FindSpendableOutputs(address string, ammount int) (int, map[string][]int) {
 	unspentOuts := make(map[string][]int)
 	unspentTxs := chain.FindUnspendTransactions(address)
